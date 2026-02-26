@@ -1,0 +1,766 @@
+<!-- BEGIN: index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Diagnostic Dashboard - Future Healthcare Intelligence</title>
+  <meta name="description" content="Advanced AI-powered patient diagnostic dashboard for futuristic hospital systems with real-time vital monitoring and predictive analytics">
+  <meta property="og:title" content="AI Diagnostic Dashboard">
+  <meta property="og:description" content="Revolutionary healthcare technology platform">
+  <meta property="og:type" content="website">
+  
+  <style>
+    /* CSS Variables */
+    :root {
+      --primary: #1e40af;
+      --secondary: #3b82f6;
+      --accent: #60a5fa;
+      --bg: #0f172a;
+      --bg-light: #1e293b;
+      --text: #f1f5f9;
+      --text-dim: #94a3b8;
+      --cyan: #00d4ff;
+      --cyan-dark: #0891b2;
+      --white: #ffffff;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Reset & Base */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom Cursor */
+    .cursor {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--cyan);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.1s ease;
+      mix-blend-mode: difference;
+    }
+
+    .cursor-follower {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      background: var(--cyan);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transition: transform 0.05s ease;
+    }
+
+    /* Glassmorphism Utilities */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px) saturate(180%);
+      -webkit-backdrop-filter: blur(15px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .glass-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 20px 60px rgba(0, 212, 255, 0.2);
+    }
+
+    /* Navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 1rem 0;
+      transition: all 0.3s ease;
+    }
+
+    .navbar.scrolled {
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-menu {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-menu a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .nav-menu a:hover {
+      background: var(--glass-bg);
+      color: var(--cyan);
+      transform: translateY(-2px);
+    }
+
+    /* Main Layout */
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: 300px 1fr 350px;
+      gap: 2rem;
+      min-height: 100vh;
+      padding: 6rem 2rem 2rem;
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+
+    /* Sidebar - Patient List */
+    .patient-sidebar {
+      position: sticky;
+      top: 6rem;
+      height: fit-content;
+    }
+
+    .sidebar-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--glass-border);
+      margin-bottom: 1rem;
+    }
+
+    .sidebar-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--cyan);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 0.5rem;
+    }
+
+    .patient-count {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .patient-list {
+      max-height: 70vh;
+      overflow-y: auto;
+      padding: 0 1rem;
+    }
+
+    .patient-item {
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .patient-item:hover {
+      background: rgba(0, 212, 255, 0.1);
+      border-left-color: var(--cyan);
+      transform: translateX(8px);
+    }
+
+    .patient-item.active {
+      background: rgba(0, 212, 255, 0.15);
+      border-left-color: var(--cyan);
+    }
+
+    .patient-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .patient-id {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 0.5rem;
+    }
+
+    .patient-status {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .status-stable {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+    }
+
+    .status-critical {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    .status-monitoring {
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+    }
+
+    /* Main Content Area */
+    .main-content {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 2rem;
+    }
+
+    /* Hero Header */
+    .hero-header {
+      text-align: center;
+      padding: 3rem 2rem;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--cyan-dark) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Vital Signs Grid */
+    .vitals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .vital-card {
+      padding: 2rem;
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vital-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .vital-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .vital-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 0.5rem;
+    }
+
+    .vital-unit {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .vital-trend {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .trend-up {
+      color: #22c55e;
+    }
+
+    .trend-down {
+      color: #ef4444;
+    }
+
+    .trend-stable {
+      color: var(--text-dim);
+    }
+
+    /* Chart Container */
+    .chart-container {
+      height: 100px;
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Right Panel - AI Analysis */
+    .ai-panel {
+      position: sticky;
+      top: 6rem;
+      height: fit-content;
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    /* Risk Score Card */
+    .risk-card {
+      padding: 2rem;
+      text-align: center;
+      border-radius: 16px;
+    }
+
+    .risk-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .risk-score-container {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 1rem;
+    }
+
+    .risk-score {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.5rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .risk-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+
+    /* 3D Body Model Placeholder */
+    .body-model {
+      padding: 2rem;
+      text-align: center;
+      border-radius: 16px;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .model-placeholder {
+      width: 120px;
+      height: 200px;
+      background: linear-gradient(180deg, var(--cyan) 0%, var(--secondary) 100%);
+      border-radius: 60px 60px 30px 30px;
+      position: relative;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .model-placeholder::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 40px;
+      background: var(--bg);
+      border-radius: 50%;
+    }
+
+    .model-label {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Animations */
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .pulse {
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .dashboard-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .patient-sidebar,
+      .ai-panel {
+        position: static;
+      }
+
+      .patient-list {
+        max-height: none;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-container {
+        padding: 0 1rem;
+      }
+
+      .dashboard-container {
+        padding: 5rem 1rem 1rem;
+      }
+
+      .vitals-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+      }
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-light);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--secondary);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--cyan);
+    }
+
+    /* Loading Animation */
+    .loading-dot {
+      display: inline-block;
+      width: 4px;
+      height: 4px;
+      background: var(--cyan);
+      border-radius: 50%;
+      margin: 0 2px;
+      animation: pulse 1.4s ease-in-out infinite both;
+    }
+
+    .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+    .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+  </style>
+</head>
+<body>
+  <!-- Custom Cursor -->
+  <div class="cursor"></div>
+  <div class="cursor-follower"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar glass" id="navbar">
+    <div class="nav-container">
+      <a href="#" class="logo">AI_DIAGNOSTIC</a>
+      <ul class="nav-menu">
+        <li><a href="#dashboard">DASHBOARD</a></li>
+        <li><a href="#patients">PATIENTS</a></li>
+        <li><a href="#analytics">ANALYTICS</a></li>
+        <li><a href="#settings">SETTINGS</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Dashboard Container -->
+  <div class="dashboard-container">
+    <!-- Patient Sidebar -->
+    <aside class="patient-sidebar glass-card">
+      <div class="sidebar-header">
+        <h3 class="sidebar-title">ACTIVE_PATIENTS</h3>
+        <div class="patient-count">12 ONLINE</div>
+      </div>
+      <div class="patient-list">
+        <div class="patient-item active">
+          <div class="patient-name">Sarah Chen</div>
+          <div class="patient-id">ID: 2024-0847</div>
+          <span class="patient-status status-critical">CRITICAL</span>
+        </div>
+        <div class="patient-item">
+          <div class="patient-name">Michael Rodriguez</div>
+          <div class="patient-id">ID: 2024-0846</div>
+          <span class="patient-status status-stable">STABLE</span>
+        </div>
+        <div class="patient-item">
+          <div class="patient-name">Emily Watson</div>
+          <div class="patient-id">ID: 2024-0845</div>
+          <span class="patient-status status-monitoring">MONITORING</span>
+        </div>
+        <div class="patient-item">
+          <div class="patient-name">David Kim</div>
+          <div class="patient-id">ID: 2024-0844</div>
+          <span class="patient-status status-stable">STABLE</span>
+        </div>
+        <div class="patient-item">
+          <div class="patient-name">Anna Kowalski</div>
+          <div class="patient-id">ID: 2024-0843</div>
+          <span class="patient-status status-monitoring">MONITORING</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Hero Header -->
+      <header class="hero-header">
+        <h1 class="hero-title">AI DIAGNOSTIC COMMAND CENTER</h1>
+        <p class="hero-subtitle">Real-time patient monitoring with predictive analytics and intelligent risk assessment for next-generation healthcare</p>
+      </header>
+
+      <!-- Vital Signs Grid -->
+      <section class="vitals-grid">
+        <div class="vital-card glass-card" style="border-left: 4px solid #ef4444;">
+          <div class="vital-header">
+            <span class="vital-title">HEART RATE</span>
+            <span class="pulse" style="color: #ef4444;">●</span>
+          </div>
+          <div class="vital-value" style="color: #ef4444;">142</div>
+          <div class="vital-unit">BPM</div>
+          <div class="vital-trend trend-up">↑ +18 BPM</div>
+          <div class="chart-container">
+            <svg class="chart-svg" viewBox="0 0 300 100">
+              <defs>
+                <linearGradient id="heartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0.5" />
+                  <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0" />
+                </linearGradient>
+              </defs>
+              <path d="M0,60 Q20,20 40,50 Q60,80 80,40 Q100,20 120,55 Q140,85 160,35 Q180,15 200,60 Q220,90 240,30 Q260,10 280,65 L300,70" 
+                    stroke="#ef4444" stroke-width="2" fill="none">
+                <animate attributeName="stroke-dasharray" values="0,1000;300,1000" dur="2s" repeatCount="indefinite"/>
+              </path>
+              <path d="M0,60 Q20,20 40,50 Q60,80 80,40 Q100,20 120,55 Q140,85 160,35 Q180,15 200,60 Q220,90 240,30 Q260,10 280,65 L300,70 L300,100 L0,100 Z" 
+                    fill="url(#heartGradient)" opacity="0.3"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="vital-card glass-card" style="border-left: 4px solid #f59e0b;">
+          <div class="vital-header">
+            <span class="vital-title">BLOOD PRESSURE</span>
+            <span class="pulse" style="color: #f59e0b;">●</span>
+          </div>
+          <div class="vital-value" style="color: #f59e0b;">156/94</div>
+          <div class="vital-unit">mmHg</div>
+          <div class="vital-trend trend-up">↑ ELEVATED</div>
+          <div class="chart-container">
+            <svg class="chart-svg" viewBox="0 0 300 100">
+              <defs>
+                <linearGradient id="bpGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.5" />
+                  <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0" />
+                </linearGradient>
+              </defs>
+              <path d="M0,70 L30,45 L60,55 L90,40 L120,50 L150,35 L180,45 L210,30 L240,40 L270,35 L300,45" 
+                    stroke="#f59e0b" stroke-width="2" fill="none">
+                <animate attributeName="stroke-dasharray" values="0,1000;300,1000" dur="3s" repeatCount="indefinite"/>
+              </path>
+              <path d="M0,80 L30,65 L60,70 L90,60 L120,65 L150,55 L180,60 L210,50 L240,55 L270,50 L300,60" 
+                    stroke="#f59e0b" stroke-width="1.5" fill="none" opacity="0.7">
+                <animate attributeName="stroke-dasharray" values="0,1000;300,1000" dur="3s" repeatCount="indefinite"/>
+              </path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="vital-card glass-card" style="border-left: 4px solid #06b6d4;">
+          <div class="vital-header">
+            <span class="vital-title">OXYGEN LEVEL</span>
+            <span class="pulse" style="color: #06b6d4;">●</span>
+          </div>
+          <div class="vital-value" style="color: #06b6d4;">89%</div>
+          <div class="vital-unit">SpO2</div>
+          <div class="vital-trend trend-down">↓ -6%</div>
+          <div class="chart-container">
+            <svg class="chart-svg" viewBox="0 0 300 100">
+              <defs>
+                <linearGradient id="o2Gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:0.5" />
+                  <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0" />
+                </linearGradient>
+              </defs>
+              <path d="M0,30 L40,25 L80,35 L120,30 L160,40 L200,45 L240,50 L280,55 L300,60" 
+                    stroke="#06b6d4" stroke-width="2" fill="none">
+                <animate attributeName="stroke-dasharray" values="0,1000;300,1000" dur="4s" repeatCount="indefinite"/>
+              </path>
+              <path d="M0,30 L40,25 L80,35 L120,30 L160,40 L200,45 L240,50 L280,55 L300,60 L300,100 L0,100 Z" 
+                    fill="url(#o2Gradient)" opacity="0.3"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="vital-card glass-card" style="border-left: 4px solid #10b981;">
+          <div class="vital-header">
+            <span class="vital-title">TEMPERATURE</span>
+            <span class="pulse" style="color: #10b981;">●</span>
+          </div>
+          <div class="vital-value" style="color: #10b981;">101.2°F</div>
+          <div class="vital-unit">CELSIUS</div>
+          <div class="vital-trend trend-up">↑ +2.1°F</div>
+          <div class="chart-container">
+            <svg class="chart-svg" viewBox="0 0 300 100">
+              <defs>
+                <linearGradient id="tempGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.5" />
+                  <stop offset="100%" style="stop-color:#10b981;stop-opacity:0" />
+                </linearGradient>
+              </defs>
+              <path d="M0,50 L50,45 L100,40 L150,35 L200,30 L250,25 L300,20" 
+                    stroke="#10b981" stroke-width="2" fill="none">
+                <animate attributeName="stroke-dasharray" values="0,1000;300,1000" dur="5s" repeatCount="indefinite"/>
+              </path>
+              <path d="M0,50 L50,45 L100,40 L150,35 L200,30 L250,25 L300,20 L300,100 L0,100 Z" 
+                    fill="url(#tempGradient)" opacity="0.3"/>
+            </svg>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- AI Panel -->
+    <aside class="ai-panel">
+      <!-- Risk Score -->
+      <div class="risk-card glass-card">
+        <h3 class="risk-title">AI RISK ASSESSMENT</h3>
+        <div class="risk-score-container">
+          <svg width="150" height="150" style="transform: rotate(-90deg);">
+            <circle cx="75" cy="75" r="65" stroke="rgba(239, 68, 68, 0.2)" stroke-width="8" fill="none"/>
+            <circle cx="75" cy="75" r="65" stroke="#ef4444" stroke-width="8" fill="none" 
+                    stroke-dasharray="408" stroke-dashoffset="122" stroke-linecap="round">
+              <animate attributeName="stroke-dashoffset" values="408;122" dur="2s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+          <div class="risk-score" style="color: #ef4444;">78</div>
+        </div>
+        <div class="risk-label" style="color: #ef4444;">HIGH RISK</div>
+        <div style="font-size: 0.8rem; color: var(--text-dim); margin-top: 1rem;">
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+          <span style="margin-left: 0.5rem;">ANALYZING</span>
+        </div>
+      </div>
+
+      <!-- 3D Body Model -->
+      <div class="body-model glass-card">
+        <div class="model-placeholder">
+          <div style="position: absolute; top: 80px; left: 20px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; animation: pulse 1s infinite;"></div>
+          <div style="position: absolute; top: 120px; left: 50px; width: 6px; height: 6px; background: #f59e0b; border-radius: 50%; animation: pulse 1.5s infinite;"></div>
+          <div style="position: absolute; top: 100px; left: 40px; width: 4px; height: 4px; background: #06b6d4; border-radius: 50%; animation: pulse 2s infinite;"></div>
+        </div>
+        <div class="model-label">3D PATIENT MODEL</div>
+        <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.5rem;">INTERACTIVE MAPPING</div>
+      </div>
+
+      <!-- AI Insights -->
+      <div class="glass-card" style="padding: 1.5rem;">
+        <h4 style="color: var(--cyan); font-size: 0.9rem; margin-bottom:
+</body>
+</html>
